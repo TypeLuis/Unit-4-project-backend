@@ -24,8 +24,9 @@ def upgrade():
         sa.Column("item_name", sa.String),
         sa.Column("item_price", sa.String),
         sa.Column("item_link", sa.String),
+        sa.Column("item_img", sa.String),
         sa.Column("checkout_date", sa.Date),
-        sa.Column("checkedOut", sa.String),
+        sa.Column("checkedOut", sa.Boolean),
     )
 
 

@@ -5,7 +5,8 @@ import sqlalchemy
 from bs4 import BeautifulSoup as bs
 import requests
 import re
-from testing import testing
+
+# from testing import testing
 
 from ebay import ebay
 from newEgg import new_egg
@@ -27,7 +28,7 @@ import models
 models.db.init_app(app)
 
 
-app.register_blueprint(testing)
+# app.register_blueprint(testing)
 
 app.register_blueprint(ebay)
 

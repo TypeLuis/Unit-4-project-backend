@@ -23,14 +23,16 @@ def cart_routes():
         cart_list = []
         for cart in user.carts:
             if cart.checkedOut == "false":
+                print(cart.checkedOut)
                 cart_list.append(cart.to_json())
-                return {"carts": cart_list}
+        return {"carts": cart_list}
 
     elif request.method == "POST":
         cart = models.Cart(
             item_name=request.json["item_name"],
             item_price=request.json["item_price"],
             item_link=request.json["item_link"],
+            item_img=request.json["item_img"],
             checkout_date=None,
             checkedOut=False,
         )

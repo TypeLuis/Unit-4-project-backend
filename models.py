@@ -13,7 +13,7 @@ class User(db.Model):
 
     def to_json(self):
         return {
-            "id": self.id,
+            # "id": self.id,
             "email": self.email,
             "carts": [c.to_json() for c in self.carts],
         }
@@ -27,6 +27,7 @@ class Cart(db.Model):
     item_name = db.Column(db.String)
     item_price = db.Column(db.String)
     item_link = db.Column(db.String)
+    item_img = db.Column(db.String)
     checkout_date = db.Column(db.Date)
     checkedOut = db.Column(db.Boolean)
 
@@ -37,6 +38,7 @@ class Cart(db.Model):
             "item_name": self.item_name,
             "item_price": self.item_price,
             "item_link": self.item_link,
+            "item_img": self.item_img,
             "checkout_date": self.checkout_date,
             "checkedOut": self.checkedOut,
         }

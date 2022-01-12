@@ -46,6 +46,8 @@ def find_newegg_product(product):
 
         link = parent["href"]
 
+        short_link = link.split("?")[0].split("/")[-1]
+
         product_div = item.find_parent(class_="item-container")
 
         try:
@@ -56,6 +58,7 @@ def find_newegg_product(product):
                 "price": int(price.replace(",", "")),
                 "link": link,
                 "image": image,
+                "short_link": short_link,
             }
         except:
             pass
@@ -71,6 +74,7 @@ def find_newegg_product(product):
             "price": str(item[1]["price"]),
             "link": item[1]["link"],
             "image": item[1]["image"],
+            "short_link": item[1]["short_link"],
         }
 
         sorted_list.append(sorted_dict)
@@ -82,6 +86,7 @@ def find_newegg_product(product):
 @new_egg.route("/newegg/page/<string:url>", methods=["GET"])
 def newegg_product_page(url):
     try:
+        # http://localhost:5001/newegg/page?N82E16834156031
         page = requests.get(f"https://www.newegg.com/p/{url}").text
         #
         doc = bs(page, "html.parser")
@@ -90,7 +95,7 @@ def newegg_product_page(url):
         bullet_points = doc.find(class_="product-bullets").find_all("li")
         product_bullets = []
         for bullet in bullet_points:
-            bullet_dict = {"bullet-point": bullet.string.strip()}
+            bullet_dict = {"bullet_point": bullet.string.strip()}
             product_bullets.append(bullet_dict)
             # print(item.string)
 
@@ -136,7 +141,8 @@ def newegg_product_page(url):
             for row in trs:
                 header, data = row.contents
                 # print(str(header))
-                header = str(header).split(">")[1].split("<")[0]
+                header = header.text
+                # header = str(header).split(">")[1].split("<")[0]
                 data = str(data).split("td>")[1].split("</td")[0]
                 if "<br/>" in data:
                     data = data.replace("<br/>", "\n")
@@ -148,7 +154,7 @@ def newegg_product_page(url):
 
         page_dict["specs"] = specs
 
-        return {"page-info": page_dict}
+        return {"page_info": page_dict}
 
     except Exception as e:
         print(e)

@@ -13,19 +13,22 @@ import jwt
 
 @user.route("/users", methods=["POST"])
 def create_user():
+    print("Im here!")
     hashed_pw = bcrypt.generate_password_hash(request.json["password"]).decode("utf-8")
-
+    print(hashed_pw)
     try:
         user = models.User(email=request.json["email"], password=hashed_pw)
 
         models.db.session.add(user)
         models.db.session.commit()
 
+        print(user.to_json())
         encrypted_id = jwt.encode(
             {"user_id": user.id}, os.environ.get("JWT_SECRET"), algorithm="HS256"
         )
 
         return {"user": user.to_json(), "user_id": encrypted_id}
+        # return "ok"
 
     except Exception as e:
         return {"error" f"{e}"}, 400
@@ -33,25 +36,30 @@ def create_user():
 
 @user.route("/users/login", methods=["POST"])
 def login():
-    user = models.User.query.filter_by(email=request.json["email"]).first()
+    try:
+        user = models.User.query.filter_by(email=request.json["email"]).first()
 
-    if not user:
-        return {"message": "User not found"}
+        if not user:
+            return {"message": "User not found"}, 401
 
-    elif bcrypt.check_password_hash(user.password, request.json["password"]):
-        encrypted_id = jwt.encode(
-            {"user_id": user.id}, os.environ.get("JWT_SECRET"), algorithm="HS256"
-        )
-        return {"user": user.to_json(), "user_id": encrypted_id}
+        elif bcrypt.check_password_hash(user.password, request.json["password"]):
+            encrypted_id = jwt.encode(
+                {"user_id": user.id}, os.environ.get("JWT_SECRET"), algorithm="HS256"
+            )
+            return {"user": user.to_json(), "user_id": encrypted_id}
 
-    else:
-        return {"message": "password incorrect"}
+        else:
+            return {"message": "password incorrect"}, 402
+
+    except Exception as e:
+        return {"error" f"{e}"}, 400
 
 
 @user.route("/users/verify", methods=["GET"])
 def verify_user():
     try:
         print(request.headers["Authorization"])
+
         decrypted_id = jwt.decode(
             request.headers["Authorization"],
             os.environ.get("JWT_SECRET"),
@@ -68,7 +76,7 @@ def verify_user():
         if user:
             return {"user": user.to_json()}
         else:
-            return {"message": "user not found"}, 404
+            return {"message": "user not found"}, 401
 
     except Exception as e:
         print(e)
