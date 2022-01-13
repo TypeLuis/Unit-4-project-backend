@@ -11,7 +11,7 @@ import re
 from ebay import ebay
 from newEgg import new_egg
 from Cart import cart
-from User import user
+# from User import user
 
 
 app = Flask(__name__)
@@ -38,7 +38,7 @@ app.register_blueprint(new_egg)
 
 app.register_blueprint(cart)
 
-app.register_blueprint(user)
+# app.register_blueprint(user)
 
 @app.route('/', methods=['GET'])
 def root():
