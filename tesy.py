@@ -1,5 +1,8 @@
 from bs4 import BeautifulSoup as bs
 import requests
+import flask_sqlalchemy
+
+print(flask_sqlalchemy)
 
 page = requests.get(
     "https://www.newegg.com/gigabyte-x570-aorus-elite-wifi/p/N82E16813145165?Item=N82E16813145165&cm_sp=Homepage_SS-_-P1_13-145-165-_-01102022"
