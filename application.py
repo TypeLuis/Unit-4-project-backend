@@ -38,6 +38,11 @@ app.register_blueprint(cart)
 
 app.register_blueprint(user)
 
+@app.route('/', methods=['GET'])
+def root():
+    return {"message": 'ok'}
+
+
 
 @app.route("/steam/specials", methods=["GET"])
 def get_steam_specials():
