@@ -140,3 +140,4 @@ def ebay_product_page(url):
 
     except Exception as e:
         print(e)
+        return {"page_info": f'{e}'}
