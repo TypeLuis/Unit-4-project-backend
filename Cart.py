@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, session, abort, request
 import os
 import jwt
 import models
+import base64
 from datetime import datetime
 
 cart = Blueprint("cart", __name__)
@@ -11,20 +12,22 @@ cart = Blueprint("cart", __name__)
 @cart.route("/cart", methods=["POST", "GET", "PUT", "DELETE"])
 def cart_routes():
 
+    print(dict(request.headers))
+
     decrypted_id = jwt.decode(
         request.headers["Authorization"],
         os.environ.get("JWT_SECRET"),
         algorithms="HS256",
     )["user_id"]
 
+    print(decrypted_id)
+
     user = models.User.query.filter_by(id=decrypted_id).first()
 
     if request.method == "GET":
         cart_list = []
         for cart in user.carts:
-            if cart.checkedOut == "false":
-                print(cart.checkedOut)
-                cart_list.append(cart.to_json())
+            cart_list.append(cart.to_json())
         return {"carts": cart_list}
 
     elif request.method == "POST":
@@ -51,16 +54,17 @@ def cart_routes():
             userId=decrypted_id, checkout_date=None
         ).all()
 
-        date_stamp = datetime.now()
-
         for cart in carts:
-            cart.checkout_date = date_stamp
+            cart.checkout_date = request.json["date"]
             cart.checkedOut = True
             models.db.session.add(cart)
 
         models.db.session.commit()
 
-        return {"carts": [c.to_json() for c in carts]}
+        return {
+            "carts": [c.to_json() for c in carts],
+            "success": "Items checked out successfully",
+        }
 
     # http://localhost:5001/cart?id=1
     elif request.method == "DELETE":

@@ -33,10 +33,6 @@ def parse(doc):
 
     page_dict["image"] = doc.find(id="icImg")["src"]
 
-    iframes = doc.find_all("iframe")
-
-    print(iframes)
-
     if doc.find("iframe", {"id": "desc_ifr"}):
         iframe = doc.find("iframe", {"id": "desc_ifr"})["src"]
         frame_page = requests.get(iframe).text

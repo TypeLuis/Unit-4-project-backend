@@ -28,7 +28,7 @@ class Cart(db.Model):
     item_price = db.Column(db.String)
     item_link = db.Column(db.String)
     item_img = db.Column(db.String)
-    checkout_date = db.Column(db.Date)
+    checkout_date = db.Column(db.String)
     checkedOut = db.Column(db.Boolean)
 
     def to_json(self):
