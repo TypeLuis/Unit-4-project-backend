@@ -102,12 +102,22 @@ def ebay_product_page(url):
             if "Details about" in title:
                 page_dict["title"] = title.split("Details about")[-1].strip()
 
-            page_dict["price"] = float(
-                doc.find(id="prcIsum")
-                .text.split(" ")[-1]
-                .replace("$", "")
-                .replace(",", "")
-            )
+
+            if '/ea' in doc.find(id="prcIsum"):
+                page_dict["price"] = float(
+                    doc.find(id="prcIsum")
+                    .text.split(" ")[-1]
+                    .replace("$", "")
+                    .replace(",", "")
+                ).split('/')[0]
+
+            else:
+                page_dict["price"] = float(
+                    doc.find(id="prcIsum")
+                    .text.split(" ")[-1]
+                    .replace("$", "")
+                    .replace(",", "")
+                )
 
             page_dict["image"] = doc.find(id="icImg")["src"]
 
