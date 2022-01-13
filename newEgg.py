@@ -25,7 +25,7 @@ def find_newegg_product(product):
     # finds the pagination element
     # page_text = doc.find(class_="list-tool-pagination-text").strong
 
-    pages = int(doc.find_all(class_='btn-group-cell')[-1].button.text)
+    pages = int(doc.find_all(class_='btn-group-cell')[-2].button.text)
 
     # splits to get the last page number
     # pages = int(str(page_text).split("/")[-2].split(">")[-1][:-1])
