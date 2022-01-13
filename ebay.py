@@ -87,7 +87,7 @@ def find_ebay_product(product):
 
 
 @ebay.route("/ebay/page/<string:url>", methods=["GET"])
-def newegg_product_page(url):
+def ebay_product_page(url):
     try:
         url = f"https://www.ebay.com/itm/{url}"
 
