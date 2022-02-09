@@ -111,8 +111,8 @@ def create_checkout_session():
         session = stripe.checkout.Session.create(
             line_items=cart_list, 
             mode='payment',
-            success_url=f'https://store-search-project.herokuapp.com/checkout?success=true',
-            cancel_url=f'https://store-search-project.herokuapp.com/checkout?canceled=true',
+            success_url=f'https://store-search-project.herokuapp.com/order/checkout?success=true',
+            cancel_url=f'https://store-search-project.herokuapp.com/order/checkout?canceled=true',
         )
 
         print(session)
