@@ -34,7 +34,7 @@ class Cart(db.Model):
     def to_json(self):
         return {
             "id": self.id,
-            "userId": self.userId,
+            # "userId": self.userId,
             "item_name": self.item_name,
             "item_price": self.item_price,
             "item_link": self.item_link,
