@@ -5,11 +5,9 @@ GET http://172.28.149.120:5001/newegg/beanie
 # User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582
 # Content-Type: application/json
 
-# {
-#     "email" : "klk2@test.com",
-#     "name" : "Luis222",
-#     "password" : "123"
-# }
+###
+GET https://store-search-backend.herokuapp.com/newegg/beanie
+
 
 ###
 
@@ -32,10 +30,10 @@ POST http://172.28.149.120:5001/cart
 Content-Type: application/json
 
 {
-    "item_name": "Cat",
-    "item_price": 500.00,
-    "item_link": "https://i.imgur.com/3AiFXjL.jpeg",
-    "item_img": "https://i.imgur.com/3AiFXjL.jpeg"
+    "item_name": "Stubborn Attachments",
+    "item_price": 20.00,
+    "item_link": "https://i.imgur.com/EHyR2nP.png",
+    "item_img": "https://i.imgur.com/EHyR2nP.png"
 }
 
 
