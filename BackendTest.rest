@@ -6,7 +6,7 @@ GET http://172.28.149.120:5001/newegg/beanie
 # Content-Type: application/json
 
 ###
-GET https://store-search-backend.herokuapp.com/newegg/3080
+GET https://store-search-backend.herokuapp.com/newegg/beanie
 
 
 ###

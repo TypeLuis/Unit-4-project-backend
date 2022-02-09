@@ -1,3 +1,4 @@
+from crypt import methods
 from flask import Blueprint, render_template, session, abort, request
 
 import os
@@ -8,6 +9,26 @@ import base64
 from datetime import datetime
 
 cart = Blueprint("cart", __name__)
+
+
+
+@cart.route('/order', methods=["GET"])
+def order_route():
+    decrypted_id = jwt.decode(
+        request.headers["Authorization"],
+        os.environ.get("JWT_SECRET"),
+        algorithms="HS256",
+    )["user_id"]
+
+
+    user = models.User.query.filter_by(id=decrypted_id).first()
+
+    cart_list = []
+    for cart in user.carts:
+        cart_list.append(cart.to_json())
+    
+    return {"carts": cart_list}
+
 
 
 @cart.route("/cart", methods=["POST", "GET", "PUT", "DELETE"])
