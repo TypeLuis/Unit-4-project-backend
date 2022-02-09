@@ -59,3 +59,30 @@ def parse(doc):
 
 doc = get_data(url)
 parse(doc)
+
+
+cart_list = []
+dictt = {}
+for cart in user.carts:
+
+    if cart.checkedOut == "false":
+        
+        if cart.item_name in dictt:
+            dictt[cart.item_name]['quantity'] += 1
+        
+        elif cart.item_name not in dictt:
+            dictt[cart.item_name] = {
+                'quantity' : 1,
+                'price' : cart.item_price * 100
+            }
+
+    # if cart.checkedOut == "false":
+    #     cart_dict = {'price_data': {
+    #         'currency': 'usd',
+    #         'product_data': {
+    #         'name': 'T-shirt',
+    #         },
+    #     'unit_amount': 2000,
+    #     },
+    #     'quantity': 1,}
+    #     cart_list.append(cart.to_json())

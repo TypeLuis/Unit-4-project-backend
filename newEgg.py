@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
+from requests_html import HTMLSession
 import re
 
 
@@ -11,6 +12,7 @@ new_egg = Blueprint("newEgg", __name__)
 @new_egg.route("/newegg/<string:product>", methods=["GET"])
 def find_newegg_product(product):
 
+
     if request.args.get("page"):
         #  http://localhost:5000/newegg/am4?page=2
         url = f"https://www.newegg.com/p/pl?d={product}&N=4131&page={request.args.get('page')}"
@@ -18,7 +20,11 @@ def find_newegg_product(product):
         #  http://localhost:5000/newegg/am4
         url = f"https://www.newegg.com/p/pl?d={product}&N=4131"
 
-    page = requests.get(url).text
+
+    session = HTMLSession()
+    page = session.get(url).content
+
+    # page = requests.get(url).text
 
     doc = bs(page, "html.parser")
 

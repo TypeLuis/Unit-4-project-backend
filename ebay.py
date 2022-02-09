@@ -14,45 +14,47 @@ from flask import Blueprint, render_template, session, abort, request
 ebay = Blueprint("ebay", __name__)
 
 
+# This Route gets data of the products requested from ebay
 @ebay.route("/ebay/<string:product>", methods=["GET"])
 def find_ebay_product(product):
 
     url = f"https://www.ebay.com/sch/i.html?_from=R40&_nkw={product}&_sacat=0&LH_TitleDesc=0&_pgn={request.args.get('page')}"
 
+    # This returns the html document of the url
     def get_data(url):
         page = requests.get(url).text
         doc = bs(page, "html.parser")
         return doc
 
+    # This gets the amount of pages available 
     def get_page_num(doc):
+        # finds the last item in pagination item which is the last page
         pages = doc.find_all(class_="pagination__item")[-1].text
-        print(pages)
         return int(pages)
 
+    # This parses through each product that's available
     def parse(doc):
         results = doc.find_all("div", {"class": "s-item__wrapper clearfix"})
         product_list = []
         for item in results:
             try:
-                product = {
-                    "image": item.find("img", {"class": "s-item__image-img"})["src"],
-                    "title": item.find("h3", {"class": "s-item__title"}).text,
-                    "condition": item.find(class_="s-item__subtitle")
-                    .find(class_="SECONDARY_INFO")
-                    .text,
-                    "price": float(
-                        item.find("span", {"class": "s-item__price"})
-                        .text.replace("$", "")
-                        .replace(",", "")
-                        .strip()
-                    ),
-                    "link": item.find("a", {"class": "s-item__link"})["href"].split(
-                        "?"
-                    )[0],
-                    "short_link": item.find("a", {"class": "s-item__link"})["href"]
-                    .split("?")[0]
-                    .split("/")[-1],
-                }
+
+                product = {}
+
+                product['image'] = item.find("img", {"class": "s-item__image-img"})["src"]
+
+                product['title'] = item.find("h3", {"class": "s-item__title"}).text
+
+                product['condition'] = item.find(class_="s-item__subtitle").find(class_="SECONDARY_INFO").text
+
+                product['price'] = float(item.find("span", {"class": "s-item__price"}).text.replace("$", "").replace(",", "").strip())
+
+                if 'Shop on eBay' in product['title']:
+                    continue
+
+                product['link'] = item.find("a", {"class": "s-item__link"})["href"].split("?")[0]
+
+                product['short_link'] = item.find("a", {"class": "s-item__link"})["href"].split("?")[0].split("/")[-1]
 
                 if item.find(class_="s-item__shipping s-item__logisticsCost") != None:
                     product["shipping"] = item.find(
@@ -80,7 +82,6 @@ def find_ebay_product(product):
         return product_list
 
     doc = get_data(url)
-    get_page_num(doc)
 
     # "pages": get_page_num(doc)
     return {"products": parse(doc), "pages": get_page_num(doc)}

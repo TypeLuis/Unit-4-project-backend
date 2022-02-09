@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, abort, request
 
 import os
 import jwt
+import json
 import models
 import base64
 from datetime import datetime
@@ -12,7 +13,7 @@ cart = Blueprint("cart", __name__)
 @cart.route("/cart", methods=["POST", "GET", "PUT", "DELETE"])
 def cart_routes():
 
-    print(dict(request.headers))
+    # print(dict(request.headers))
 
     decrypted_id = jwt.decode(
         request.headers["Authorization"],
@@ -20,14 +21,34 @@ def cart_routes():
         algorithms="HS256",
     )["user_id"]
 
-    print(decrypted_id)
 
     user = models.User.query.filter_by(id=decrypted_id).first()
 
+    # user = models.User.query.filter_by(id=3).first()
+
+    print(user)
+
     if request.method == "GET":
+        # cart_list = []
+        # for cart in user.carts:
+        #     cart_list.append(cart.to_json())
         cart_list = []
+        dictt = {}
         for cart in user.carts:
-            cart_list.append(cart.to_json())
+            if cart.checkedOut == False:
+                
+                if cart.item_name in dictt:
+                    dictt[cart.item_name]['quantity'] += 1
+                
+                elif cart.item_name not in dictt:
+                    dictt[cart.item_name] = {
+                        'quantity' : 1,
+                        'price' : int(float(cart.item_price) * 100),
+                        "info" : cart.to_json()
+                    }
+
+        for key in dictt:
+            cart_list.append(dictt[key])
         return {"carts": cart_list}
 
     elif request.method == "POST":

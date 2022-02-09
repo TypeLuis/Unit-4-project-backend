@@ -1,0 +1,50 @@
+GET https://store-search-backend.herokuapp.com/newegg/3080
+
+###
+GET http://172.28.149.120:5001/newegg/beanie
+# User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582
+# Content-Type: application/json
+
+# {
+#     "email" : "klk2@test.com",
+#     "name" : "Luis222",
+#     "password" : "123"
+# }
+
+###
+
+GET https://store-search-backend.herokuapp.com/ebay/3080
+
+
+###
+GET http://172.28.149.120:5001/ebay/3080
+
+
+###
+
+GET http://172.28.149.120:5001/cart
+# Authorization: 16
+
+
+###
+
+POST http://172.28.149.120:5001/cart
+Content-Type: application/json
+
+{
+    "item_name": "Cat",
+    "item_price": 500.00,
+    "item_link": "https://i.imgur.com/3AiFXjL.jpeg",
+    "item_img": "https://i.imgur.com/3AiFXjL.jpeg"
+}
+
+
+###
+
+[
+    
+    '{"quantity": 4, "price": 299, "info": {"id": 10, "userId": 2, "item_name": "test", "item_price": "2.99", "item_link": "test", "item_img": "test", "checkout_date": null, "checkedOut": false}}', 
+
+    '{"quantity": 5, "price": 399, "info": {"id": 14, "userId": 2, "item_name": "test2", "item_price": "3.99", "item_link": "test", "item_img": "test", "checkout_date": null, "checkedOut": false}}'
+
+]

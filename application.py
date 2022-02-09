@@ -1,10 +1,13 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask_cors import CORS
 import sqlalchemy
 from bs4 import BeautifulSoup as bs
 import requests
 import re
+
+import stripe
+stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
 # from testing import testing
 
@@ -43,6 +46,78 @@ app.register_blueprint(cart)
 @app.route('/', methods=['GET'])
 def root():
     return {"message": 'ok'}
+
+
+@app.route('/pay', methods=['POST'])
+def pay():
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    'price': '{{PRICE_ID}}',
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url='http://172.28.149.120:5001' + '?success=true',
+            cancel_url='http://172.28.149.120:5001' + '?canceled=true',
+        )
+    except Exception as e:
+        return str(e)
+
+    return redirect(checkout_session.url, code=303)
+
+
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    try:
+
+        decrypted_id = jwt.decode(
+        request.headers["Authorization"],
+        os.environ.get("JWT_SECRET"),
+        algorithms="HS256",
+        )["user_id"]
+
+
+        user = models.User.query.filter_by(id=decrypted_id).first()
+
+        cart_list = []
+        dictt = {}
+        for cart in user.carts:
+            print(type(cart.checkedOut))
+            if cart.checkedOut == False:
+                
+                if cart.item_name in dictt:
+                    dictt[cart.item_name]['quantity'] += 1
+                
+                elif cart.item_name not in dictt:
+                    dictt[cart.item_name] = {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': cart.item_name,
+                            },
+                            'unit_amount': int(float(cart.item_price) * 100),
+                        },
+                        'quantity': 1,
+                    }
+
+        for key in dictt:
+            cart_list.append(dictt[key])
+
+        print(cart_list)
+
+        session = stripe.checkout.Session.create(
+            line_items=cart_list, 
+            mode='payment',
+            success_url='https://example.com/success',
+            cancel_url='https://example.com/cancel',
+        )
+        return redirect(session.url, code=303)
+
+    except Exception as e:
+        return str(e)
 
 
 
