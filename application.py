@@ -73,14 +73,14 @@ def pay():
 def create_checkout_session():
     try:
 
-        # decrypted_id = jwt.decode(
-        # request.headers["Authorization"],
-        # os.environ.get("JWT_SECRET"),
-        # algorithms="HS256",
-        # )["user_id"]
+        decrypted_id = jwt.decode(
+        request.json["Authorization"],
+        os.environ.get("JWT_SECRET"),
+        algorithms="HS256",
+        )["user_id"]
 
 
-        user = models.User.query.filter_by(id=16).first()
+        user = models.User.query.filter_by(id=decrypted_id).first()
 
         cart_list = []
         dictt = {}
@@ -116,7 +116,8 @@ def create_checkout_session():
         )
 
         print(session)
-        return redirect(session.url, code=303)
+        # return redirect(session.url, code=303)
+        return {'url' : session.url}
 
     except Exception as e:
         return str(e)
