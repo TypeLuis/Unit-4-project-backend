@@ -22,8 +22,12 @@ def find_newegg_product(product):
 
 
     # session = HTMLSession()
+    headers = {
+  "User-Agent":
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+}
 
-    page = requests.get(url).text
+    page = requests.get(url, headers=headers).text
     # page = session.get(url).content
 
     doc = bs(page, "html.parser")
