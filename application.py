@@ -74,7 +74,7 @@ def create_checkout_session():
     try:
 
         decrypted_id = jwt.decode(
-        request.json["Authorization"],
+        request.json["id"],
         os.environ.get("JWT_SECRET"),
         algorithms="HS256",
         )["user_id"]
