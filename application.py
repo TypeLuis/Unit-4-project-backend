@@ -111,8 +111,8 @@ def create_checkout_session():
         session = stripe.checkout.Session.create(
             line_items=cart_list, 
             mode='payment',
-            success_url='http://localhost:3001/checkout?success=true',
-            cancel_url='http://localhost:3001/checkout?canceled=true',
+            success_url=f'{os.environ.get("CLIENT_URL")}/checkout?success=true',
+            cancel_url=f'{os.environ.get("CLIENT_URL")}/checkout?canceled=true',
         )
 
         print(session)
