@@ -32,6 +32,8 @@ def find_newegg_product(product):
 
     doc = bs(page, "html.parser")
 
+    print(doc)
+
     # finds the pagination element
     page_text = doc.find('span', class_="list-tool-pagination-text").strong
 
