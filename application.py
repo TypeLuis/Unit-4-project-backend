@@ -1,3 +1,5 @@
+
+# Importing modules
 import os
 from flask import Flask, request, redirect
 from flask_cors import CORS
@@ -7,7 +9,7 @@ import requests
 import re
 
 import stripe
-stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+stripe.api_key = os.environ.get('Stripe_Test_Key') #Stripe test api key
 
 # from testing import testing
 
@@ -48,31 +50,12 @@ def root():
     return {"message": 'ok'}
 
 
-@app.route('/pay', methods=['POST'])
-def pay():
-    try:
-        checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': '{{PRICE_ID}}',
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            success_url='http://172.28.149.120:5001' + '?success=true',
-            cancel_url='http://172.28.149.120:5001' + '?canceled=true',
-        )
-    except Exception as e:
-        return str(e)
-
-    return redirect(checkout_session.url, code=303)
-
-
+# Backend code for stripe checkout
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
 
+        # decrypts user's Id
         decrypted_id = jwt.decode(
         request.json["id"],
         os.environ.get("JWT_SECRET"),
@@ -80,12 +63,14 @@ def create_checkout_session():
         )["user_id"]
 
 
+        # Gets user by ID
         user = models.User.query.filter_by(id=decrypted_id).first()
+
 
         cart_list = []
         dictt = {}
+        # Gets data from user's cart and formats it in data stripes understands
         for cart in user.carts:
-            print(type(cart.checkedOut))
             if cart.checkedOut == False:
                 
                 if cart.item_name in dictt:
@@ -98,7 +83,7 @@ def create_checkout_session():
                             'product_data': {
                                 'name': cart.item_name,
                             },
-                            'unit_amount': int(float(cart.item_price) * 100),
+                            'unit_amount': int(float(cart.item_price) * 100), # payment amount has to be given by penny amount
                         },
                         'quantity': 1,
                     }

@@ -34,8 +34,6 @@ def order_route():
 @cart.route("/cart", methods=["POST", "GET", "PUT", "DELETE"])
 def cart_routes():
 
-    # print(dict(request.headers))
-
     decrypted_id = jwt.decode(
         request.headers["Authorization"],
         os.environ.get("JWT_SECRET"),
@@ -45,14 +43,7 @@ def cart_routes():
 
     user = models.User.query.filter_by(id=decrypted_id).first()
 
-    # user = models.User.query.filter_by(id=3).first()
-
-    print(user)
-
     if request.method == "GET":
-        # cart_list = []
-        # for cart in user.carts:
-        #     cart_list.append(cart.to_json())
         cart_list = []
         dictt = {}
         for cart in user.carts:
