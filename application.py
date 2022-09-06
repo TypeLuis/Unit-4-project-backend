@@ -94,6 +94,9 @@ def create_checkout_session():
         print(cart_list)
 
         session = stripe.checkout.Session.create(
+            shipping_address_collection= {
+                'allowed_countries': ['US', 'CA'],
+            },
             line_items=cart_list, 
             mode='payment',
             success_url=f'https://store-search-project.herokuapp.com/order/checkout?success=true',
@@ -112,10 +115,10 @@ def create_checkout_session():
 
 @app.route("/users", methods=["POST"])
 def create_user():
-    print("Im here!")
     hashed_pw = bcrypt.generate_password_hash(request.json["password"]).decode("utf-8")
     print(hashed_pw)
     try:
+        print(type(hashed_pw))
         user = models.User(email=request.json["email"], password=hashed_pw)
 
         models.db.session.add(user)

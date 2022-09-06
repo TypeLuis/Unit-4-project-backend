@@ -43,7 +43,7 @@ def find_ebay_product(product):
 
                 product['image'] = item.find("img", {"class": "s-item__image-img"})["src"]
 
-                product['title'] = item.find("h3", {"class": "s-item__title"}).text
+                product['title'] = item.find("div", {"class": "s-item__title"}).text
 
                 product['condition'] = item.find(class_="s-item__subtitle").find(class_="SECONDARY_INFO").text
 
