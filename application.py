@@ -114,10 +114,10 @@ def create_checkout_session():
 def create_user():
     hashed_pw = bcrypt.generate_password_hash(
         request.json["password"]).decode("utf-8")
-    print(request.json)
+    print(models.User)
     try:
         print(request.get_json()['email'])
-        user = models.User(email=request.json["email"], password=hashed_pw)
+        user = models.User(email=request.json["email"], password=hashed_pw,)
         print(json.dumps(user.to_json()))
 
         models.db.session.add(user)
