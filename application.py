@@ -17,13 +17,12 @@ import json
 import stripe
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 stripe.api_key = os.environ.get('Stripe_Test_Key')  # Stripe test api key
-
-# from testing import testing
-
-# from User import user
 
 
 app = Flask(__name__)
@@ -32,23 +31,21 @@ CORS(app)
 
 bcrypt = Bcrypt(app)
 
+print(os.environ.get("DATABASE_URL"))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-models.db.init_app(app)
+db.init_app(app=app)
+# models.db.init_app(app=app)
 
-
-# app.register_blueprint(testing)
 
 app.register_blueprint(ebay)
 
 app.register_blueprint(new_egg)
 
 app.register_blueprint(cart)
-
-# app.register_blueprint(user)
 
 
 @app.route('/', methods=['GET'])
@@ -70,6 +67,7 @@ def create_checkout_session():
 
         # Gets user by ID
         user = models.User.query.filter_by(id=decrypted_id).first()
+        # user = models.User.query.filter_by(id=decrypted_id).first()
 
         cart_list = []
         dictt = {}
@@ -126,8 +124,10 @@ def create_user():
         user = models.User(email=request.json["email"], password=hashed_pw,)
         print(json.dumps(user.to_json()))
 
-        models.db.session.add(user)
-        models.db.session.commit()
+        db.session.add(user)
+        db.session.commit()
+        # models.db.session.add(user)
+        # models.db.session.commit()
 
         print(user.to_json())
         encrypted_id = jwt.encode(
@@ -138,13 +138,15 @@ def create_user():
         # return "ok"
 
     except Exception as e:
-        return {"error" f"{e}"}, 400
+        # print(e)
+        return {"error" : f"e"}, 400
 
 
 @app.route("/users/login", methods=["POST"])
 def login():
     try:
         user = models.User.query.filter_by(email=request.json["email"]).first()
+        # print(user.to_json())
 
         if not user:
             return {"message": "User not found"}, 401
@@ -153,13 +155,15 @@ def login():
             encrypted_id = jwt.encode(
                 {"user_id": user.id}, os.environ.get("JWT_SECRET"), algorithm="HS256"
             )
-            return {"user": user.to_json(), "user_id": encrypted_id}
+            user_json = user.to_json()
+            print(user_json)
+            return {"user": 'hi', "user_id": encrypted_id}
 
         else:
             return {"message": "password incorrect"}, 402
 
     except Exception as e:
-        return {"error" f"{e}"}, 400
+        return {"error" : f"{e}"}, 400
 
 
 @app.route("/users/verify", methods=["GET"])
