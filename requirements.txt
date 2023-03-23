@@ -22,7 +22,7 @@ cffi==1.15.0
 chardet==5.0.0
 charset-normalizer==2.0.10
 click==8.0.0
-cloud-init==21.3
+# cloud-init==21.3
 cloudscraper==1.2.66
 colorama==0.4.6
 command-not-found==0.3
