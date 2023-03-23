@@ -31,14 +31,12 @@ CORS(app)
 
 bcrypt = Bcrypt(app)
 
-print(os.environ.get("DATABASE_URL"))
-
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-db.init_app(app=app)
-# models.db.init_app(app=app)
+# db = SQLAlchemy(app)
+migrate = Migrate(app, models.db)
+# db.init_app(app=app)
+models.db.init_app(app=app)
 
 
 app.register_blueprint(ebay)
@@ -124,10 +122,10 @@ def create_user():
         user = models.User(email=request.json["email"], password=hashed_pw,)
         print(json.dumps(user.to_json()))
 
-        db.session.add(user)
-        db.session.commit()
-        # models.db.session.add(user)
-        # models.db.session.commit()
+        # db.session.add(user)
+        # db.session.commit()
+        models.db.session.add(user)
+        models.db.session.commit()
 
         print(user.to_json())
         encrypted_id = jwt.encode(
