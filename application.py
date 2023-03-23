@@ -1,5 +1,11 @@
 
 # Importing modules
+import models
+import jwt
+from flask_bcrypt import Bcrypt
+from Cart import cart
+from newEgg import new_egg
+from ebay import ebay
 import os
 from flask import Flask, request, redirect
 from flask_cors import CORS
@@ -7,30 +13,23 @@ import sqlalchemy
 from bs4 import BeautifulSoup as bs
 import requests
 import re
-
+import json
 import stripe
-stripe.api_key = os.environ.get('Stripe_Test_Key') #Stripe test api key
+stripe.api_key = os.environ.get('Stripe_Test_Key')  # Stripe test api key
 
 # from testing import testing
 
-from ebay import ebay
-from newEgg import new_egg
-from Cart import cart
 # from User import user
 
 
 app = Flask(__name__)
 CORS(app)
 
-from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
-import jwt
-
 
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-import models
 
 models.db.init_app(app)
 
@@ -45,6 +44,7 @@ app.register_blueprint(cart)
 
 # app.register_blueprint(user)
 
+
 @app.route('/', methods=['GET'])
 def root():
     return {"message": 'ok'}
@@ -57,25 +57,23 @@ def create_checkout_session():
 
         # decrypts user's Id
         decrypted_id = jwt.decode(
-        request.json["id"],
-        os.environ.get("JWT_SECRET"),
-        algorithms="HS256",
+            request.json["id"],
+            os.environ.get("JWT_SECRET"),
+            algorithms="HS256",
         )["user_id"]
-
 
         # Gets user by ID
         user = models.User.query.filter_by(id=decrypted_id).first()
-
 
         cart_list = []
         dictt = {}
         # Gets data from user's cart and formats it in data stripes understands
         for cart in user.carts:
             if cart.checkedOut == False:
-                
+
                 if cart.item_name in dictt:
                     dictt[cart.item_name]['quantity'] += 1
-                
+
                 elif cart.item_name not in dictt:
                     dictt[cart.item_name] = {
                         'price_data': {
@@ -83,7 +81,8 @@ def create_checkout_session():
                             'product_data': {
                                 'name': cart.item_name,
                             },
-                            'unit_amount': int(float(cart.item_price) * 100), # payment amount has to be given by penny amount
+                            # payment amount has to be given by penny amount
+                            'unit_amount': int(float(cart.item_price) * 100),
                         },
                         'quantity': 1,
                     }
@@ -94,10 +93,10 @@ def create_checkout_session():
         print(cart_list)
 
         session = stripe.checkout.Session.create(
-            shipping_address_collection= {
+            shipping_address_collection={
                 'allowed_countries': ['US', 'CA'],
             },
-            line_items=cart_list, 
+            line_items=cart_list,
             mode='payment',
             success_url=f'https://store-search-project.herokuapp.com/order/checkout?success=true',
             cancel_url=f'https://store-search-project.herokuapp.com/order/checkout?canceled=true',
@@ -105,21 +104,21 @@ def create_checkout_session():
 
         print(session)
         # return redirect(session.url, code=303)
-        return {'url' : session.url}
+        return {'url': session.url}
 
     except Exception as e:
         return str(e)
 
 
-
-
 @app.route("/users", methods=["POST"])
 def create_user():
-    hashed_pw = bcrypt.generate_password_hash(request.json["password"]).decode("utf-8")
-    print(hashed_pw)
+    hashed_pw = bcrypt.generate_password_hash(
+        request.json["password"]).decode("utf-8")
+    print(request.json)
     try:
-        print(type(hashed_pw))
+        print(request.get_json()['email'])
         user = models.User(email=request.json["email"], password=hashed_pw)
+        print(json.dumps(user.to_json()))
 
         models.db.session.add(user)
         models.db.session.commit()
@@ -185,8 +184,6 @@ def verify_user():
         return {"error" f"{e}"}, 400
 
 
-
-
 @app.route("/steam/specials", methods=["GET"])
 def get_steam_specials():
 
@@ -216,7 +213,8 @@ def get_steam_specials():
             ).strike.string
 
             product_dict["discount_price"] = (
-                product.find(class_="col search_price discounted responsive_secondrow")
+                product.find(
+                    class_="col search_price discounted responsive_secondrow")
                 .text.split("$")[-1]
                 .strip()
             )
@@ -225,7 +223,8 @@ def get_steam_specials():
                 class_="col search_discount responsive_secondrow"
             ).text.strip()
 
-            product_dict["image"] = product.find(class_="col search_capsule").img["src"]
+            product_dict["image"] = product.find(
+                class_="col search_capsule").img["src"]
 
             product_list.append(product_dict)
         except:

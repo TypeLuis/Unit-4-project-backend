@@ -26,7 +26,7 @@ def find_ebay_product(product):
         doc = bs(page, "html.parser")
         return doc
 
-    # This gets the amount of pages available 
+    # This gets the amount of pages available
     def get_page_num(doc):
         # finds the last item in pagination item which is the last page
         pages = doc.find_all(class_="pagination__item")[-1].text
@@ -41,20 +41,27 @@ def find_ebay_product(product):
 
                 product = {}
 
-                product['image'] = item.find("img", {"class": "s-item__image-img"})["src"]
+                # product['image'] = item.find("img", {"class": "s-item__image-img"})["src"]
+                product['image'] = item.find(
+                    "div", {"class": "s-item__image"}).find('img')['src']
 
-                product['title'] = item.find("div", {"class": "s-item__title"}).text
+                product['title'] = item.find(
+                    "div", {"class": "s-item__title"}).text
 
-                product['condition'] = item.find(class_="s-item__subtitle").find(class_="SECONDARY_INFO").text
+                product['condition'] = item.find(
+                    class_="s-item__subtitle").find(class_="SECONDARY_INFO").text
 
-                product['price'] = float(item.find("span", {"class": "s-item__price"}).text.replace("$", "").replace(",", "").strip())
+                # product['price'] = float(item.find(
+                #     "span", {"class": "s-item__price"}).text.replace("$", "").replace(",", "").strip())
 
                 if 'Shop on eBay' in product['title']:
                     continue
 
-                product['link'] = item.find("a", {"class": "s-item__link"})["href"].split("?")[0]
+                product['link'] = item.find(
+                    "a", {"class": "s-item__link"})["href"].split("?")[0]
 
-                product['short_link'] = item.find("a", {"class": "s-item__link"})["href"].split("?")[0].split("/")[-1]
+                product['short_link'] = item.find(
+                    "a", {"class": "s-item__link"})["href"].split("?")[0].split("/")[-1]
 
                 if item.find(class_="s-item__shipping s-item__logisticsCost") != None:
                     product["shipping"] = item.find(
@@ -99,51 +106,42 @@ def ebay_product_page(url):
 
         def parse(doc):
             page_dict = {}
-            title = doc.find("h1", {"id": "itemTitle"}).text
+            title = doc.find("h1", {"class": "x-item-title__mainTitle"}).text
+            print(title)
             if "Details about" in title:
                 page_dict["title"] = title.split("Details about")[-1].strip()
 
+            page_dict["price"] = float(doc.find(
+                "span", {"itemprop": "price"})['content'])
 
-            if '/ea' in doc.find(id="prcIsum"):
-                page_dict["price"] = float(
-                    doc.find(id="prcIsum")
-                    .text.split(" ")[-1]
-                    .replace("$", "")
-                    .replace(",", "")
-                ).split('/')[0]
-
-            else:
-                page_dict["price"] = float(
-                    doc.find(id="prcIsum")
-                    .text.split(" ")[-1]
-                    .replace("$", "")
-                    .replace(",", "")
-                )
-
-            page_dict["image"] = doc.find(id="icImg")["src"]
+            page_dict["image"] = doc.find(
+                "img", {"itemprop": "image"})["src"]
 
             if doc.find("iframe", {"id": "desc_ifr"}):
-                iframe = doc.find("iframe", {"id": "desc_ifr"})["src"]
-                frame_page = requests.get(iframe).text
+                try:
+                    iframe = doc.find("iframe", {"id": "desc_ifr"})["src"]
+                    frame_page = requests.get(iframe).text
 
-                frame_doc = bs(frame_page, "html.parser")
+                    frame_doc = bs(frame_page, "html.parser")
 
-                frame_doc.title.decompose()
+                    frame_doc.title.decompose()
 
-                for s in frame_doc.select("script"):
-                    s.extract()
+                    for s in frame_doc.select("script"):
+                        s.extract()
 
-                page_dict["description_page"] = frame_doc.text.strip()
+                    page_dict["description_page"] = frame_doc.text.strip()
 
-                # frame_doc = frame_doc.script.decompose()  # this removes all script tags in doc
+                    # frame_doc = frame_doc.script.decompose()  # this removes all script tags in doc
 
-                # images = frame_doc.find_all("div", {"class": "g_image fimage"})
+                    # images = frame_doc.find_all("div", {"class": "g_image fimage"})
 
-                # for image in images:
-                #     if image["data"]:
-                #         print(image["data"])
+                    # for image in images:
+                    #     if image["data"]:
+                    #         print(image["data"])
 
-                return page_dict
+                except Exception as e:
+                    pass
+            return page_dict
 
         doc = get_data(url)
 
