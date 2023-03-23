@@ -15,6 +15,10 @@ import requests
 import re
 import json
 import stripe
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+
 stripe.api_key = os.environ.get('Stripe_Test_Key')  # Stripe test api key
 
 # from testing import testing
@@ -31,6 +35,8 @@ bcrypt = Bcrypt(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 models.db.init_app(app)
 
 
