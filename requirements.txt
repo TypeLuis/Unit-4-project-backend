@@ -118,15 +118,15 @@ pyquery==1.4.3
 pyrsistent==0.15.5
 pyserial==3.4
 PySocks==1.7.1
-python-apt==2.0.0+ubuntu0.20.4.6
+# python-apt==2.0.0+ubuntu0.20.4.6
 python-bidi==0.4.2
 python-dateutil==2.8.1
-python-debian===0.1.36ubuntu1
+# python-debian===0.1.36ubuntu1
 python-dotenv==0.17.1
 python-editor==1.0.4
 python-socks==2.1.1
 pytz==2022.7.1
-pytz-deprecation-shim==0.1.0.post0
+# pytz-deprecation-shim==0.1.0.post0
 pyvis==0.2.1
 PyYAML==5.3.1
 qrcode==7.3.1
@@ -162,7 +162,7 @@ tzdata==2022.7
 tzlocal==4.2
 ubuntu-advantage-tools==27.2
 ufw==0.36
-unattended-upgrades==0.1
+# unattended-upgrades==0.1
 update==0.0.1
 uritools==4.0.1
 urllib3==1.26.8
