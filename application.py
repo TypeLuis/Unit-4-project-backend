@@ -32,8 +32,8 @@ CORS(app)
 bcrypt = Bcrypt(app)
 
 uri = uri = os.getenv("DATABASE_URL") 
-# if uri and uri.startswith("postgres://"):
-#     uri = uri.replace("postgres://", "postgresql://", 1)
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 #     uri = uri.replace("postgres://", "postgresql+psycopg2://", 1)
 # print(uri)
 
