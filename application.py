@@ -39,9 +39,7 @@ if uri and uri.startswith("postgres://"):
 
 app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
-# db = SQLAlchemy(app)
 migrate = Migrate(app, models.db)
-# db.init_app(app=app)
 models.db.init_app(app=app)
 
 
@@ -128,8 +126,6 @@ def create_user():
         user = models.User(email=request.json["email"], password=hashed_pw,)
         print(json.dumps(user.to_json()))
 
-        # db.session.add(user)
-        # db.session.commit()
         models.db.session.add(user)
         models.db.session.commit()
 
@@ -159,9 +155,8 @@ def login():
             encrypted_id = jwt.encode(
                 {"user_id": user.id}, os.environ.get("JWT_SECRET"), algorithm="HS256"
             )
-            user_json = user.to_json()
-            print(user_json)
-            return {"user": 'hi', "user_id": encrypted_id}
+
+            return {"user": user.to_json(), "user_id": encrypted_id}
 
         else:
             return {"message": "password incorrect"}, 402
@@ -195,7 +190,7 @@ def verify_user():
 
     except Exception as e:
         print(e)
-        return {"error" f"{e}"}, 400
+        return {"error" : f"{e}"}, 400
 
 
 @app.route("/steam/specials", methods=["GET"])
