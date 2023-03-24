@@ -51,8 +51,8 @@ def find_ebay_product(product):
                 product['condition'] = item.find(
                     class_="s-item__subtitle").find(class_="SECONDARY_INFO").text
 
-                # product['price'] = float(item.find(
-                #     "span", {"class": "s-item__price"}).text.replace("$", "").replace(",", "").strip())
+                product['price'] = float(item.find(
+                    "span", {"class": "s-item__price"}).text.replace("$", "").replace(",", "").strip())
 
                 if 'Shop on eBay' in product['title']:
                     continue
