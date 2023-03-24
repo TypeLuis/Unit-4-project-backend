@@ -31,7 +31,13 @@ CORS(app)
 
 bcrypt = Bcrypt(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+uri = uri = os.getenv("DATABASE_URL") 
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+#     uri = uri.replace("postgres://", "postgresql+psycopg2://", 1)
+# print(uri)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
 # db = SQLAlchemy(app)
 migrate = Migrate(app, models.db)
