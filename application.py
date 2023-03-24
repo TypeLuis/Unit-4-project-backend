@@ -143,7 +143,7 @@ def create_user():
 
     except Exception as e:
         # print(e)
-        return {"error" : f"e"}, 400
+        return {"error" : f"{e}"}, 400
 
 
 @app.route("/users/login", methods=["POST"])
